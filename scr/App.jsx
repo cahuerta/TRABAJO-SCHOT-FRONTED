@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FormularioPaciente from './FormularioPaciente.jsx';
+import FormularioPaciente from './formulariopaciente.jsx';
 import FormularioTraumatologo from './FormularioTraumatologo.jsx';
 import FormularioMedicoGeneral from './FormularioMedicoGeneral.jsx';
 
