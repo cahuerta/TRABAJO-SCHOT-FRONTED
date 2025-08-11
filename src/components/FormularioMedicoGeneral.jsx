@@ -1,37 +1,38 @@
 import React, { useState } from 'react';
 
 function FormularioMedicoGeneral({ data, onEnviar }) {
-  const [examenSolicitado, setExamenSolicitado] = useState('Radiografía de tórax');
-  const [nombreMedico, setNombreMedico] = useState('Médico General');
+  const [examenSolicitado, setExamenSolicitado] = useState('');
+  const [nombreMedico, setNombreMedico] = useState('');
 
   const onSubmit = (e) => {
     e.preventDefault();
     if (!data?.nombre || !data?.rut || !data?.edad) {
-      alert('Completa los datos del paciente (nombre, RUT, edad).');
+      alert('Completa los datos del paciente (nombre, RUT y edad).');
       return;
     }
-    if (!examenSolicitado?.trim()) {
-      alert('Escribe el examen solicitado.');
+    if (!examenSolicitado.trim() || !nombreMedico.trim()) {
+      alert('Completa examen solicitado y nombre del médico.');
       return;
     }
+
     onEnviar?.({
       pacienteNombre: data.nombre,
       rut: data.rut,
       edad: data.edad,
       examenSolicitado: examenSolicitado.trim(),
-      nombreMedico: nombreMedico.trim(),
+      nombreMedico: nombreMedico.trim()
+      // Nota: el backend agrega "especialidad" automáticamente
     });
   };
 
   return (
     <form onSubmit={onSubmit} style={styles.form}>
-      <h1 style={styles.title}>Orden de Medicina General</h1>
+      <h1 style={styles.title}>Formulario Médico General</h1>
 
       <label style={styles.label}>Examen solicitado</label>
       <input
         style={styles.input}
         type="text"
-        placeholder="Ej: Radiografía de tórax / Hemograma / etc."
         value={examenSolicitado}
         onChange={(e) => setExamenSolicitado(e.target.value)}
         required
@@ -66,7 +67,6 @@ const styles = {
     marginBottom: '20px',
     color: '#0072CE',
     textAlign: 'center',
-    fontSize: '20px',
   },
   label: {
     display: 'block',
