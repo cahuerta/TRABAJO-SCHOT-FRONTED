@@ -16,9 +16,7 @@ export default function App() {
       .catch(() => setStatus('Backend NO disponible'))
   }, [])
 
-  const onPacienteChange = (campo, valor) => setForm((f) => ({ ...f, [campo]: valor }))
-
-  // Mapea el texto que emite tu SVG a { dolor, lado }
+  // Tu EsquemaHumanoSVG entrega strings como "Cadera izquierda"
   const onSeleccionZona = (zona) => {
     const z = (zona || '').toLowerCase()
     if (z === 'columna lumbar') {
@@ -34,43 +32,29 @@ export default function App() {
     }
   }
 
+  const onPacienteChange = (campo, valor) => setForm((f) => ({ ...f, [campo]: valor }))
+
   const guardarPaciente = async () => {
-    try {
-      await crearPaciente(form)
-      alert('Paciente guardado')
-    } catch (e) {
-      alert('Error al guardar paciente: ' + e.message)
-    }
+    await crearPaciente(form)
   }
 
   const enviarTrauma = async (payload) => {
-    try {
-      await crearTraumatologo(payload)
-      alert('Registro Traumatólogo guardado')
-    } catch (e) {
-      alert('Error al guardar traumatólogo: ' + e.message)
-    }
+    await crearTraumatologo(payload)
   }
 
   const enviarGeneral = async (payload) => {
-    try {
-      await crearMedicoGeneral(payload)
-      alert('Registro Médico General guardado')
-    } catch (e) {
-      alert('Error al guardar médico general: ' + e.message)
-    }
+    await crearMedicoGeneral(payload)
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '32px auto', fontFamily: 'system-ui, Arial', padding: '0 12px' }}>
+    <div style={{ maxWidth: 1000, margin: '32px auto', fontFamily: 'system-ui, Arial', padding: '0 12px' }}>
       <h1>ICA Forms</h1>
       <p><b>Estado backend:</b> {status}</p>
       <p><b>Backend:</b> {BASE || '(no configurado)'} </p>
 
-      {/* Esquema + Form Paciente */}
+      {/* Esquema + Form Paciente (tu diseño) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
         <div>
-          <h2>Esquema humano</h2>
           <EsquemaHumanoSVG onSeleccionZona={onSeleccionZona} />
           <div style={{ marginTop: 8, fontSize: 14, color: '#333' }}>
             <b>Zona seleccionada:</b> {form.dolor || '—'} {form.lado || ''}
@@ -78,26 +62,38 @@ export default function App() {
         </div>
 
         <div>
-          <h2>Paciente (hoja “Pacientes”)</h2>
           <FormularioPaciente
-            data={form}
-            onChange={onPacienteChange}
-            onGuardar={guardarPaciente}
+            datos={form}
+            onCambiarDato={onPacienteChange}
+            onSubmit={(e) => {
+              e.preventDefault()
+              guardarPaciente()
+                .then(() => alert('Paciente guardado'))
+                .catch((err) => alert('Error al guardar paciente: ' + err.message))
+            }}
           />
         </div>
       </div>
 
-      {/* Botones de registros médicos */}
+      {/* Tarjetas con el mismo look & feel que tu formulario */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 32 }}>
-        <div>
-          <h2>Traumatólogo (hoja “Traumatologo”)</h2>
-          <FormularioTraumatologo data={form} onEnviar={enviarTrauma} />
-        </div>
+        <FormularioTraumatologo
+          data={form}
+          onEnviar={(payload) =>
+            enviarTrauma(payload)
+              .then(() => alert('Registro Traumatólogo guardado'))
+              .catch((e) => alert('Error al guardar traumatólogo: ' + e.message))
+          }
+        />
 
-        <div>
-          <h2>Médico General (hoja “MedicoGeneral”)</h2>
-          <FormularioMedicoGeneral data={form} onEnviar={enviarGeneral} />
-        </div>
+        <FormularioMedicoGeneral
+          data={form}
+          onEnviar={(payload) =>
+            enviarGeneral(payload)
+              .then(() => alert('Registro Médico General guardado'))
+              .catch((e) => alert('Error al guardar médico general: ' + e.message))
+          }
+        />
       </div>
     </div>
   )
