@@ -1,106 +1,103 @@
-import React, { useState } from 'react'
+import React from 'react';
 
-/**
- * Esquema humano muy simple y clickeable.
- * Zonas: Rodilla (Der/Izq), Cadera (Der/Izq), Columna lumbar (sin lado).
- *
- * onSeleccion: ({ dolor, lado }) => void
- */
-export default function EsquemaHumano({ onSeleccion }) {
-  const [sel, setSel] = useState({ dolor: '', lado: '' })
-
-  const pick = (dolor, lado = '') => {
-    const v = { dolor, lado }
-    setSel(v)
-    onSeleccion && onSeleccion(v)
-  }
-
-  const isSel = (dolor, lado = '') =>
-    sel.dolor === dolor && (lado ? sel.lado === lado : sel.lado === '')
-
-  // Estilos básicos
-  const base = { fill: '#eaeaea', stroke: '#888', strokeWidth: 1 }
-  const hot = { fill: '#ffd966', stroke: '#cc9900', strokeWidth: 2 }
-  const hit = { cursor: 'pointer' }
+function EsquemaHumanoSVG({ onSeleccionZona }) {
+  const handleClick = (zona) => {
+    onSeleccionZona(zona);
+  };
 
   return (
-    <div style={{ display: 'grid', placeItems: 'center', gap: 8 }}>
-      <svg viewBox="0 0 200 420" width="260" height="520" aria-label="Esquema humano">
-        {/* Silueta simplificada */}
-        <circle cx="100" cy="40" r="22" style={base} />
-        <rect x="80" y="62" width="40" height="80" rx="8" style={base} />
-        {/* Brazos */}
-        <rect x="42" y="70" width="30" height="18" rx="8" style={base} />
-        <rect x="128" y="70" width="30" height="18" rx="8" style={base} />
-        {/* Pelvis */}
-        <rect x="75" y="144" width="50" height="28" rx="8" style={base} />
-        {/* Piernas */}
-        <rect x="78" y="174" width="16" height="110" rx="8" style={base} />
-        <rect x="106" y="174" width="16" height="110" rx="8" style={base} />
-        {/* Tibias */}
-        <rect x="78" y="286" width="16" height="90" rx="8" style={base} />
-        <rect x="106" y="286" width="16" height="90" rx="8" style={base} />
+    <svg
+      width="240"
+      height="520"
+      viewBox="0 0 240 520"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{
+        backgroundColor: '#f5f8ff',
+        borderRadius: 12,
+        boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+      }}
+    >
+      {/* Cabeza */}
+      <circle cx="120" cy="50" r="30" fill="#a0b8ff" stroke="#556abf" strokeWidth="2" />
 
-        {/* ===== ZONAS CLICKEABLES ===== */}
+      {/* Cuello */}
+      <rect x="110" y="80" width="20" height="10" fill="#a0b8ff" />
 
-        {/* Columna lumbar (zona media-baja de la espalda/abdomen) */}
-        <rect
-          x="88" y="120" width="24" height="28" rx="6"
-          style={{ ...(isSel('Columna lumbar') ? hot : { fill: 'transparent', stroke: 'transparent' }) }}
-          onClick={() => pick('Columna lumbar', '')}
-        >
-          <title>Columna lumbar</title>
-        </rect>
+      {/* Torso */}
+      <rect x="90" y="90" width="60" height="120" rx="15" fill="#c0d1ff" stroke="#556abf" strokeWidth="2" />
 
-        {/* Cadera izquierda (visual izquierda = lado derecho del SVG) */}
-        <ellipse
-          cx="118" cy="158" rx="12" ry="10"
-          style={{ ...(isSel('Cadera', 'Izquierda') ? hot : { fill: 'transparent', stroke: 'transparent' }), ...hit }}
-          onClick={() => pick('Cadera', 'Izquierda')}
-        >
-          <title>Cadera Izquierda</title>
-        </ellipse>
+      {/* Columna lumbar (centrada) */}
+      <rect
+        x="115"
+        y="100"
+        width="10"
+        height="100"
+        fill="rgba(85, 106, 191, 0.3)"
+        stroke="#556abf"
+        onClick={() => handleClick('Columna lumbar')}
+        cursor="pointer"
+      />
+      <text x="130" y="170" fontSize="10" fill="#333">Columna</text>
 
-        {/* Cadera derecha */}
-        <ellipse
-          cx="82" cy="158" rx="12" ry="10"
-          style={{ ...(isSel('Cadera', 'Derecha') ? hot : { fill: 'transparent', stroke: 'transparent' }), ...hit }}
-          onClick={() => pick('Cadera', 'Derecha')}
-        >
-          <title>Cadera Derecha</title>
-        </ellipse>
+      {/* Brazos */}
+      <line x1="90" y1="100" x2="40" y2="230" stroke="#556abf" strokeWidth="14" strokeLinecap="round" />
+      <line x1="150" y1="100" x2="200" y2="230" stroke="#556abf" strokeWidth="14" strokeLinecap="round" />
 
-        {/* Rodilla izquierda */}
-        <ellipse
-          cx="114" cy="282" rx="10" ry="10"
-          style={{ ...(isSel('Rodilla', 'Izquierda') ? hot : { fill: 'transparent', stroke: 'transparent' }), ...hit }}
-          onClick={() => pick('Rodilla', 'Izquierda')}
-        >
-          <title>Rodilla Izquierda</title>
-        </ellipse>
+      {/* Piernas */}
+      <line x1="100" y1="210" x2="100" y2="410" stroke="#556abf" strokeWidth="16" strokeLinecap="round" />
+      <line x1="140" y1="210" x2="140" y2="410" stroke="#556abf" strokeWidth="16" strokeLinecap="round" />
 
-        {/* Rodilla derecha */}
-        <ellipse
-          cx="90" cy="282" rx="10" ry="10"
-          style={{ ...(isSel('Rodilla', 'Derecha') ? hot : { fill: 'transparent', stroke: 'transparent' }), ...hit }}
-          onClick={() => pick('Rodilla', 'Derecha')}
-        >
-          <title>Rodilla Derecha</title>
-        </ellipse>
-      </svg>
+      {/* Cadera izquierda */}
+      <ellipse
+        cx="100"
+        cy="210"
+        rx="15"
+        ry="15"
+        fill="rgba(85, 106, 191, 0.3)"
+        stroke="#556abf"
+        onClick={() => handleClick('Cadera izquierda')}
+        cursor="pointer"
+      />
+      <text x="50" y="200" fontSize="10" fill="#333">Cadera izq.</text>
 
-      {/* Leyenda + selección actual */}
-      <div style={{ fontSize: 14, color: '#333' }}>
-        <b>Selección:</b>{' '}
-        {sel.dolor ? `${sel.dolor}${sel.lado ? ' ' + sel.lado : ''}` : '—'}
-      </div>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-        <button onClick={() => pick('Columna lumbar', '')}>Columna lumbar</button>
-        <button onClick={() => pick('Cadera', 'Derecha')}>Cadera Derecha</button>
-        <button onClick={() => pick('Cadera', 'Izquierda')}>Cadera Izquierda</button>
-        <button onClick={() => pick('Rodilla', 'Derecha')}>Rodilla Derecha</button>
-        <button onClick={() => pick('Rodilla', 'Izquierda')}>Rodilla Izquierda</button>
-      </div>
-    </div>
-  )
+      {/* Cadera derecha */}
+      <ellipse
+        cx="140"
+        cy="210"
+        rx="15"
+        ry="15"
+        fill="rgba(85, 106, 191, 0.3)"
+        stroke="#556abf"
+        onClick={() => handleClick('Cadera derecha')}
+        cursor="pointer"
+      />
+      <text x="160" y="200" fontSize="10" fill="#333">Cadera der.</text>
+
+      {/* Rodilla izquierda */}
+      <circle
+        cx="100"
+        cy="300"
+        r="12"
+        fill="rgba(85, 106, 191, 0.3)"
+        stroke="#556abf"
+        onClick={() => handleClick('Rodilla izquierda')}
+        cursor="pointer"
+      />
+      <text x="40" y="300" fontSize="10" fill="#333">Rodilla izq.</text>
+
+      {/* Rodilla derecha */}
+      <circle
+        cx="140"
+        cy="300"
+        r="12"
+        fill="rgba(85, 106, 191, 0.3)"
+        stroke="#556abf"
+        onClick={() => handleClick('Rodilla derecha')}
+        cursor="pointer"
+      />
+      <text x="160" y="300" fontSize="10" fill="#333">Rodilla der.</text>
+    </svg>
+  );
 }
+
+export default EsquemaHumanoSVG;
