@@ -6,6 +6,7 @@ function FormularioMedicoGeneral({ data, onEnviar }) {
 
   const onSubmit = (e) => {
     e.preventDefault();
+
     if (!data?.nombre || !data?.rut || !data?.edad) {
       alert('Completa los datos del paciente (nombre, RUT y edad).');
       return;
@@ -22,10 +23,11 @@ function FormularioMedicoGeneral({ data, onEnviar }) {
       edad: data.edad,
       dolor: data.dolor || '',
       lado: data.lado || '',
-      // datos del formulario de médico general
+      // propios de médico general
       examenSolicitado: examenSolicitado.trim(),
       nombreMedico: nombreMedico.trim(),
-      // el backend agrega "especialidad" automáticamente
+      // marca de especialidad (además el backend la fija)
+      especialidad: 'Medicina general',
     });
   };
 
@@ -36,6 +38,7 @@ function FormularioMedicoGeneral({ data, onEnviar }) {
       {/* Datos del paciente (solo lectura) */}
       <fieldset style={styles.fs}>
         <legend style={styles.legend}>Datos del paciente</legend>
+
         <label style={styles.label}>Nombre</label>
         <input style={styles.input} value={data?.nombre || ''} disabled />
 
