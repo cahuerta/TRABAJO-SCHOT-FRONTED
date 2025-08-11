@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 
+// Sin @vitejs/plugin-react. Compila JSX con esbuild (modo automático).
 export default defineConfig({
-  plugins: [react()],
+  esbuild: { jsx: 'automatic' },
   build: { outDir: 'dist' }
 })
