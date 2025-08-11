@@ -1,45 +1,38 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 function FormularioTraumatologo({ data, onEnviar }) {
-  // Prefill del examen según la selección del esquema / datos del paciente
-  const sugerido = useMemo(() => {
-    if (!data) return '';
-    const lado = data?.lado ? ` ${data.lado}` : '';
-    if (!data?.dolor) return '';
-    return `Estudio de ${data.dolor}${lado}`;
-  }, [data?.dolor, data?.lado]);
-
-  const [examenSolicitado, setExamenSolicitado] = useState(sugerido);
-  const [nombreMedico, setNombreMedico] = useState('Dr. Cristóbal Huerta');
+  const [examenSolicitado, setExamenSolicitado] = useState('');
+  const [nombreMedico, setNombreMedico] = useState('');
 
   const onSubmit = (e) => {
     e.preventDefault();
     if (!data?.nombre || !data?.rut || !data?.edad) {
-      alert('Completa los datos del paciente (nombre, RUT, edad).');
+      alert('Completa los datos del paciente (nombre, RUT y edad).');
       return;
     }
-    if (!examenSolicitado?.trim()) {
-      alert('Escribe el examen solicitado.');
+    if (!examenSolicitado.trim() || !nombreMedico.trim()) {
+      alert('Completa examen solicitado y nombre del médico.');
       return;
     }
+
     onEnviar?.({
       pacienteNombre: data.nombre,
       rut: data.rut,
       edad: data.edad,
       examenSolicitado: examenSolicitado.trim(),
-      nombreMedico: nombreMedico.trim(),
+      nombreMedico: nombreMedico.trim()
+      // NOTA: el backend agrega "especialidad" automáticamente
     });
   };
 
   return (
     <form onSubmit={onSubmit} style={styles.form}>
-      <h1 style={styles.title}>Orden de Traumatología</h1>
+      <h1 style={styles.title}>Formulario Traumatólogo</h1>
 
       <label style={styles.label}>Examen solicitado</label>
       <input
         style={styles.input}
         type="text"
-        placeholder="Resonancia rodilla derecha / RX cadera AP-L / etc."
         value={examenSolicitado}
         onChange={(e) => setExamenSolicitado(e.target.value)}
         required
@@ -74,7 +67,6 @@ const styles = {
     marginBottom: '20px',
     color: '#0072CE',
     textAlign: 'center',
-    fontSize: '20px',
   },
   label: {
     display: 'block',
