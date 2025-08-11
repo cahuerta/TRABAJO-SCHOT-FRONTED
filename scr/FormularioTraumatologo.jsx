@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-
-const BACKEND_BASE = import.meta.env.VITE_BACKEND_BASE || 'http://localhost:3001';
+import { postJSON } from './api';
 
 export default function FormularioTraumatologo() {
   const [form, setForm] = useState({
@@ -20,23 +19,22 @@ export default function FormularioTraumatologo() {
     setMensaje('');
     setLoading(true);
     try {
-      const r = await fetch(`${BACKEND_BASE}/api/traumatologo`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pacienteNombre: form.pacienteNombre,
-          rut: form.rut,
-          edad: form.edad,
-          examenSolicitado: form.examenSolicitado,
-          nombreMedico: form.nombreMedico,
-          especialidad: 'Traumatólogo', // agregado automáticamente
-        }),
+      await postJSON('/api/traumatologo', {
+        pacienteNombre: form.pacienteNombre,
+        rut: form.rut,
+        edad: form.edad,
+        examenSolicitado: form.examenSolicitado,
+        nombreMedico: form.nombreMedico,
+        especialidad: 'Traumatólogo', // se envía automáticamente
       });
-      const j = await r.json().catch(() => ({}));
-      if (!r.ok || !j?.ok) throw new Error(j?.error || 'Error guardando datos');
-
       setMensaje('✔ Datos guardados en Google Sheets');
-      setForm({ pacienteNombre: '', rut: '', edad: '', examenSolicitado: '', nombreMedico: '' });
+      setForm({
+        pacienteNombre: '',
+        rut: '',
+        edad: '',
+        examenSolicitado: '',
+        nombreMedico: '',
+      });
     } catch (err) {
       setMensaje(`❌ ${err.message}`);
     } finally {
@@ -109,11 +107,7 @@ const styles = {
     width: '100%',
     boxSizing: 'border-box',
   },
-  title: {
-    marginBottom: '20px',
-    color: '#0072CE',
-    textAlign: 'center',
-  },
+  title: { marginBottom: '20px', color: '#0072CE', textAlign: 'center' },
   label: {
     display: 'block',
     marginTop: '15px',
