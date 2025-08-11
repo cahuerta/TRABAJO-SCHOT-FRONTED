@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-
-const BACKEND_BASE = import.meta.env.VITE_BACKEND_BASE || 'http://localhost:3001';
+import { postJSON } from './api';
 
 export default function FormularioMedicoGeneral() {
   const [form, setForm] = useState({
@@ -21,22 +20,15 @@ export default function FormularioMedicoGeneral() {
     setMensaje('');
     setLoading(true);
     try {
-      const r = await fetch(`${BACKEND_BASE}/api/medico-general`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pacienteNombre: form.pacienteNombre,
-          rut: form.rut,
-          edad: form.edad,
-          diagnosticoGeneral: form.diagnostico,     // el backend espera "diagnosticoGeneral"
-          examenSolicitado: form.examenSolicitado,
-          nombreMedico: form.nombreMedico,
-          especialidad: 'Médico general',           // agregado automático
-        }),
+      await postJSON('/api/medico-general', {
+        pacienteNombre: form.pacienteNombre,
+        rut: form.rut,
+        edad: form.edad,
+        diagnosticoGeneral: form.diagnostico, // el backend espera "diagnosticoGeneral"
+        examenSolicitado: form.examenSolicitado,
+        nombreMedico: form.nombreMedico,
+        especialidad: 'Médico general', // se envía automáticamente
       });
-      const j = await r.json().catch(() => ({}));
-      if (!r.ok || !j?.ok) throw new Error(j?.error || 'Error guardando datos');
-
       setMensaje('✔ Datos guardados en Google Sheets');
       setForm({
         pacienteNombre: '',
@@ -126,11 +118,7 @@ const styles = {
     width: '100%',
     boxSizing: 'border-box',
   },
-  title: {
-    marginBottom: '20px',
-    color: '#0072CE',
-    textAlign: 'center',
-  },
+  title: { marginBottom: '20px', color: '#0072CE', textAlign: 'center' },
   label: {
     display: 'block',
     marginTop: '15px',
@@ -142,7 +130,7 @@ const styles = {
     width: '100%',
     padding: '8px 10px',
     marginTop: '5px',
-    border: '1px solid '#ccc',
+    border: '1px solid #ccc',
     borderRadius: '5px',
     boxSizing: 'border-box',
     fontSize: '14px',
