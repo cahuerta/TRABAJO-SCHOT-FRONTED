@@ -1,44 +1,24 @@
-// src/api.js
-export const BACKEND_BASE =
-  import.meta.env.VITE_BACKEND_BASE || 'http://localhost:3001';
+const BASE = import.meta.env.VITE_BACKEND_BASE || 'http://localhost:3001'
 
-/**
- * Hace una petición JSON con timeout y manejo de errores.
- * Retorna el JSON ya parseado si todo sale bien.
- */
-async function request(path, { method = 'GET', body } = {}) {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), 20000); // 20s
-
-  const res = await fetch(`${BACKEND_BASE}${path}`, {
-    method,
+async function req(path, options = {}) {
+  const r = await fetch(`${BASE}${path}`, {
     headers: { 'Content-Type': 'application/json' },
-    body: body ? JSON.stringify(body) : undefined,
-    signal: controller.signal,
-  }).catch((e) => {
-    throw new Error(e.name === 'AbortError' ? 'Tiempo de espera agotado' : e.message);
-  });
-
-  clearTimeout(id);
-
-  let json = {};
-  try {
-    json = await res.json();
-  } catch {
-    // si no hay JSON, dejamos {}
+    ...options
+  })
+  const j = await r.json().catch(() => ({}))
+  if (!r.ok || j?.ok === false) {
+    throw new Error(j?.error || `HTTP ${r.status}`)
   }
-
-  if (!res.ok || json?.ok === false) {
-    throw new Error(json?.error || `Error HTTP ${res.status}`);
-  }
-
-  return json;
+  return j
 }
 
-export function postJSON(path, payload) {
-  return request(path, { method: 'POST', body: payload });
-}
+export const health = () => req('/health')
 
-export function getJSON(path) {
-  return request(path, { method: 'GET' });
-}
+export const crearPaciente = (payload) =>
+  req('/api/pacientes', { method: 'POST', body: JSON.stringify(payload) })
+
+export const crearTraumatologo = (payload) =>
+  req('/api/traumatologo', { method: 'POST', body: JSON.stringify(payload) })
+
+export const crearMedicoGeneral = (payload) =>
+  req('/api/medico-general', { method: 'POST', body: JSON.stringify(payload) })
