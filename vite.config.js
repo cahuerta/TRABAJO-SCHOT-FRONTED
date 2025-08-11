@@ -1,6 +1,7 @@
-// vite.config.js
-export default {
-  server: {
-    port: 5173, // Puerto local para desarrollo
-  },
-};
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  build: { outDir: 'dist' } // Vercel sirve dist automáticamente
+})
