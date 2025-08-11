@@ -1,6 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-function FormularioPaciente({ datos, onCambiarDato, onSubmit }) {
+const BACKEND_BASE = import.meta.env.VITE_BACKEND_BASE || 'http://localhost:3001';
+
+function FormularioPaciente() {
+  const [form, setForm] = useState({
+    nombre: '',
+    rut: '',
+    edad: '',
+    dolor: '',
+    lado: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [mensaje, setMensaje] = useState('');
+
+  const set = (campo, valor) => setForm((p) => ({ ...p, [campo]: valor }));
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setMensaje('');
+    setLoading(true);
+    try {
+      const r = await fetch(`${BACKEND_BASE}/api/pacientes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: form.nombre,
+          rut: form.rut,
+          edad: form.edad,
+          dolor: form.dolor,
+          lado: form.lado,
+        }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j?.ok) throw new Error(j?.error || 'Error guardando datos');
+
+      setMensaje('✔ Datos guardados en Google Sheets');
+      setForm({ nombre: '', rut: '', edad: '', dolor: '', lado: '' });
+    } catch (err) {
+      setMensaje(`❌ ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <form onSubmit={onSubmit} style={styles.form}>
       <h1 style={styles.title}>Asistente Virtual para Pacientes</h1>
@@ -9,8 +51,8 @@ function FormularioPaciente({ datos, onCambiarDato, onSubmit }) {
       <input
         style={styles.input}
         type="text"
-        value={datos.nombre}
-        onChange={(e) => onCambiarDato('nombre', e.target.value)}
+        value={form.nombre}
+        onChange={(e) => set('nombre', e.target.value)}
         required
       />
 
@@ -18,8 +60,8 @@ function FormularioPaciente({ datos, onCambiarDato, onSubmit }) {
       <input
         style={styles.input}
         type="text"
-        value={datos.rut}
-        onChange={(e) => onCambiarDato('rut', e.target.value)}
+        value={form.rut}
+        onChange={(e) => set('rut', e.target.value)}
         placeholder="12.345.678-9"
         required
       />
@@ -30,16 +72,16 @@ function FormularioPaciente({ datos, onCambiarDato, onSubmit }) {
         type="number"
         min="10"
         max="110"
-        value={datos.edad}
-        onChange={(e) => onCambiarDato('edad', e.target.value)}
+        value={form.edad}
+        onChange={(e) => set('edad', e.target.value)}
         required
       />
 
       <label style={styles.label}>Dolor:</label>
       <select
         style={styles.input}
-        value={datos.dolor}
-        onChange={(e) => onCambiarDato('dolor', e.target.value)}
+        value={form.dolor}
+        onChange={(e) => set('dolor', e.target.value)}
         required
       >
         <option value="">Seleccione...</option>
@@ -51,8 +93,8 @@ function FormularioPaciente({ datos, onCambiarDato, onSubmit }) {
       <label style={styles.label}>Lado:</label>
       <select
         style={styles.input}
-        value={datos.lado}
-        onChange={(e) => onCambiarDato('lado', e.target.value)}
+        value={form.lado}
+        onChange={(e) => set('lado', e.target.value)}
         required
       >
         <option value="">Seleccione...</option>
@@ -60,9 +102,15 @@ function FormularioPaciente({ datos, onCambiarDato, onSubmit }) {
         <option value="Izquierda">Izquierda</option>
       </select>
 
-      <button style={styles.button} type="submit">
-        Generar Informe
+      <button style={styles.button} type="submit" disabled={loading}>
+        {loading ? 'Guardando…' : 'Guardar en Google Sheets'}
       </button>
+
+      {mensaje && (
+        <div style={{ marginTop: 12, fontSize: 14 }}>
+          {mensaje}
+        </div>
+      )}
     </form>
   );
 }
