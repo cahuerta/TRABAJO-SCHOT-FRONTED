@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { health, crearPaciente, crearTraumatologo, crearMedicoGeneral } from './api'
 import FormularioPaciente from './components/FormularioPaciente.jsx'
-import EsquemaHumano from './components/EsquemaHumano.jsx'
+import EsquemaHumanoSVG from './components/EsquemaHumanoSVG.jsx'
 import FormularioTraumatologo from './components/FormularioTraumatologo.jsx'
 import FormularioMedicoGeneral from './components/FormularioMedicoGeneral.jsx'
 
@@ -17,7 +17,22 @@ export default function App() {
   }, [])
 
   const onPacienteChange = (campo, valor) => setForm((f) => ({ ...f, [campo]: valor }))
-  const onSeleccionZona = ({ dolor, lado }) => setForm((f) => ({ ...f, dolor, lado }))
+
+  // Mapea el texto que emite tu SVG a { dolor, lado }
+  const onSeleccionZona = (zona) => {
+    const z = (zona || '').toLowerCase()
+    if (z === 'columna lumbar') {
+      setForm((f) => ({ ...f, dolor: 'Columna lumbar', lado: '' }))
+    } else if (z === 'cadera izquierda') {
+      setForm((f) => ({ ...f, dolor: 'Cadera', lado: 'Izquierda' }))
+    } else if (z === 'cadera derecha') {
+      setForm((f) => ({ ...f, dolor: 'Cadera', lado: 'Derecha' }))
+    } else if (z === 'rodilla izquierda') {
+      setForm((f) => ({ ...f, dolor: 'Rodilla', lado: 'Izquierda' }))
+    } else if (z === 'rodilla derecha') {
+      setForm((f) => ({ ...f, dolor: 'Rodilla', lado: 'Derecha' }))
+    }
+  }
 
   const guardarPaciente = async () => {
     try {
@@ -56,7 +71,7 @@ export default function App() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
         <div>
           <h2>Esquema humano</h2>
-          <EsquemaHumano onSeleccion={onSeleccionZona} />
+          <EsquemaHumanoSVG onSeleccionZona={onSeleccionZona} />
           <div style={{ marginTop: 8, fontSize: 14, color: '#333' }}>
             <b>Zona seleccionada:</b> {form.dolor || '—'} {form.lado || ''}
           </div>
