@@ -16,12 +16,16 @@ function FormularioTraumatologo({ data, onEnviar }) {
     }
 
     onEnviar?.({
+      // datos del paciente
       pacienteNombre: data.nombre,
       rut: data.rut,
       edad: data.edad,
+      dolor: data.dolor || '',
+      lado: data.lado || '',
+      // datos del formulario de traumatólogo
       examenSolicitado: examenSolicitado.trim(),
-      nombreMedico: nombreMedico.trim()
-      // NOTA: el backend agrega "especialidad" automáticamente
+      nombreMedico: nombreMedico.trim(),
+      // el backend agrega "especialidad" automáticamente
     });
   };
 
@@ -29,6 +33,26 @@ function FormularioTraumatologo({ data, onEnviar }) {
     <form onSubmit={onSubmit} style={styles.form}>
       <h1 style={styles.title}>Formulario Traumatólogo</h1>
 
+      {/* Datos del paciente (solo lectura) */}
+      <fieldset style={styles.fs}>
+        <legend style={styles.legend}>Datos del paciente</legend>
+        <label style={styles.label}>Nombre</label>
+        <input style={styles.input} value={data?.nombre || ''} disabled />
+
+        <label style={styles.label}>RUT</label>
+        <input style={styles.input} value={data?.rut || ''} disabled />
+
+        <label style={styles.label}>Edad</label>
+        <input style={styles.input} value={data?.edad || ''} disabled />
+
+        <label style={styles.label}>Dolor</label>
+        <input style={styles.input} value={data?.dolor || ''} disabled />
+
+        <label style={styles.label}>Lado</label>
+        <input style={styles.input} value={data?.lado || ''} disabled />
+      </fieldset>
+
+      {/* Campos propios */}
       <label style={styles.label}>Examen solicitado</label>
       <input
         style={styles.input}
@@ -47,9 +71,7 @@ function FormularioTraumatologo({ data, onEnviar }) {
         required
       />
 
-      <button style={styles.button} type="submit">
-        Guardar Traumatólogo
-      </button>
+      <button style={styles.button} type="submit">Guardar Traumatólogo</button>
     </form>
   );
 }
@@ -68,9 +90,20 @@ const styles = {
     color: '#0072CE',
     textAlign: 'center',
   },
+  fs: {
+    border: '1px solid #e0e0e0',
+    borderRadius: 8,
+    padding: '12px',
+    marginBottom: 12,
+  },
+  legend: {
+    padding: '0 6px',
+    color: '#555',
+    fontSize: 12,
+  },
   label: {
     display: 'block',
-    marginTop: '15px',
+    marginTop: '12px',
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'left',
@@ -85,7 +118,7 @@ const styles = {
     fontSize: '14px',
   },
   button: {
-    marginTop: '25px',
+    marginTop: '18px',
     backgroundColor: '#0072CE',
     color: 'white',
     border: 'none',
