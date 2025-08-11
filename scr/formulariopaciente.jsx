@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
+import { postJSON } from './api';
 
-const BACKEND_BASE = import.meta.env.VITE_BACKEND_BASE || 'http://localhost:3001';
-
-function FormularioPaciente() {
+export default function FormularioPaciente() {
   const [form, setForm] = useState({
     nombre: '',
     rut: '',
@@ -20,20 +19,13 @@ function FormularioPaciente() {
     setMensaje('');
     setLoading(true);
     try {
-      const r = await fetch(`${BACKEND_BASE}/api/pacientes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre: form.nombre,
-          rut: form.rut,
-          edad: form.edad,
-          dolor: form.dolor,
-          lado: form.lado,
-        }),
+      await postJSON('/api/pacientes', {
+        nombre: form.nombre,
+        rut: form.rut,
+        edad: form.edad,
+        dolor: form.dolor,
+        lado: form.lado,
       });
-      const j = await r.json().catch(() => ({}));
-      if (!r.ok || !j?.ok) throw new Error(j?.error || 'Error guardando datos');
-
       setMensaje('✔ Datos guardados en Google Sheets');
       setForm({ nombre: '', rut: '', edad: '', dolor: '', lado: '' });
     } catch (err) {
@@ -100,17 +92,14 @@ function FormularioPaciente() {
         <option value="">Seleccione...</option>
         <option value="Derecha">Derecha</option>
         <option value="Izquierda">Izquierda</option>
+        <option value="Bilateral">Bilateral</option>
       </select>
 
       <button style={styles.button} type="submit" disabled={loading}>
         {loading ? 'Guardando…' : 'Guardar en Google Sheets'}
       </button>
 
-      {mensaje && (
-        <div style={{ marginTop: 12, fontSize: 14 }}>
-          {mensaje}
-        </div>
-      )}
+      {mensaje && <div style={{ marginTop: 12, fontSize: 14 }}>{mensaje}</div>}
     </form>
   );
 }
@@ -124,11 +113,7 @@ const styles = {
     width: '100%',
     boxSizing: 'border-box',
   },
-  title: {
-    marginBottom: '20px',
-    color: '#0072CE',
-    textAlign: 'center',
-  },
+  title: { marginBottom: '20px', color: '#0072CE', textAlign: 'center' },
   label: {
     display: 'block',
     marginTop: '15px',
@@ -158,5 +143,3 @@ const styles = {
     transition: 'background 0.3s ease',
   },
 };
-
-export default FormularioPaciente;
